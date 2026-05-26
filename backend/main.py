@@ -36,6 +36,14 @@ app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 async def read_index():
     return FileResponse(FRONTEND_DIR / "index.html")
 
+@app.get("/methods")
+async def read_methods():
+    return FileResponse(FRONTEND_DIR / "methods.html")
+
+@app.get("/usage")
+async def read_usage():
+    return FileResponse(FRONTEND_DIR / "usage.html")
+
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}

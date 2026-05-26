@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Methods | MT Collagen Quantification</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-shell">
+        <header class="app-header">
+            <div>
+                <p class="eyebrow">Masson's Trichrome Analysis</p>
+                <h1>Methods</h1>
+                <p class="subtitle">Manuscript-ready method text and references for collagen area quantification using color deconvolution.</p>
+            </div>
+            <nav class="top-nav" aria-label="Site navigation">
+                <a href="/">Analyze</a>
+                <a href="/methods" class="active">Methods</a>
+                <a href="/usage">Usage KR/EN</a>
+            </nav>
+        </header>
+
+        <main class="content-page">
+            <section class="text-panel">
+                <span class="badge metric">Manuscript Text</span>
+                <h2>Suggested Methods Paragraph</h2>
+                <p>
+                    Masson's trichrome-stained tissue images were analyzed using a web-based color deconvolution tool implemented in Python/FastAPI and JavaScript. RGB images were converted to optical density (OD) space using OD = -log(I/I0), where I is the measured RGB intensity and I0 is the incident light/background intensity. When a background region of interest (ROI) was selected, I0 was estimated from the mean RGB intensity of that ROI; otherwise, normalized white illumination was used. Collagen and counterstain components were unmixed using a Ruifrok and Johnston color deconvolution approach with Masson's trichrome stain vectors, optionally recalibrated from user-selected collagen and counterstain ROIs. The collagen concentration channel was converted to an 8-bit transmittance-style grayscale image using 255 x exp(-C), where C is the collagen concentration. Collagen-positive pixels were segmented using a fixed grayscale threshold of 0-180. Tissue area was estimated by excluding bright background pixels from the original image using a mean RGB intensity threshold of 235. Fibrotic burden was calculated as: collagen-positive pixels within tissue / total tissue pixels x 100.
+                </p>
+                <p class="note">
+                    Edit the threshold values, ROI policy, magnification, scanner/camera model, and image format details to match the final experimental protocol used in the manuscript.
+                </p>
+            </section>
+
+            <section class="text-panel">
+                <span class="badge neutral">Algorithm</span>
+                <h2>Calculation Summary</h2>
+                <ol class="method-list">
+                    <li>Load the input image and convert it to RGB.</li>
+                    <li>Estimate background illumination from a selected background ROI or use normalized white illumination.</li>
+                    <li>Convert RGB intensities into optical density space.</li>
+                    <li>Separate stain contributions using the inverse stain matrix for collagen, counterstain, and residual/background components.</li>
+                    <li>Generate collagen-only RGB, 8-bit grayscale, and binary mask outputs.</li>
+                    <li>Exclude bright non-tissue background and compute collagen-positive area as a percentage of valid tissue area.</li>
+                </ol>
+            </section>
+
+            <section class="text-panel">
+                <span class="badge mask">References</span>
+                <h2>References</h2>
+                <ol class="references">
+                    <li>
+                        Ruifrok AC, Johnston DA. Quantification of histochemical staining by color deconvolution. <em>Analytical and Quantitative Cytology and Histology</em>. 2001;23(4):291-299. PMID: 11531144.
+                        <a href="https://pubmed.ncbi.nlm.nih.gov/11531144/" target="_blank" rel="noopener">PubMed</a>
+                    </li>
+                    <li>
+                        Landini G. Colour Deconvolution. ImageJ plugin documentation. Accessed 2026-05-26.
+                        <a href="https://imagej.net/plugins/colour-deconvolution" target="_blank" rel="noopener">ImageJ documentation</a>
+                    </li>
+                </ol>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -74,7 +74,7 @@ input {
     line-height: 1.65;
 }
 
-.header-meta {
+.top-nav {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -82,7 +82,7 @@ input {
     justify-content: flex-end;
 }
 
-.header-meta span {
+.top-nav a {
     border: 1px solid var(--line);
     background: rgba(255, 255, 255, 0.72);
     color: var(--muted);
@@ -90,6 +90,15 @@ input {
     padding: 8px 12px;
     font-size: 0.84rem;
     font-weight: 700;
+    text-decoration: none;
+    transition: background-color 140ms ease, border-color 140ms ease, color 140ms ease;
+}
+
+.top-nav a:hover,
+.top-nav a.active {
+    color: #ffffff;
+    background: var(--teal);
+    border-color: var(--teal);
 }
 
 .upload-panel {
@@ -435,6 +444,66 @@ button.icon-btn.active {
     color: var(--rose);
 }
 
+.content-page {
+    display: grid;
+    gap: 18px;
+    margin-top: 10px;
+}
+
+.content-page.two-column {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.text-panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    box-shadow: 0 10px 34px rgba(27, 39, 51, 0.08);
+    padding: 24px;
+}
+
+.text-panel h2 {
+    margin-top: 10px;
+    margin-bottom: 14px;
+    font-size: 1.28rem;
+    line-height: 1.25;
+}
+
+.text-panel p,
+.method-list,
+.references {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+.text-panel p + p {
+    margin-top: 14px;
+}
+
+.method-list,
+.references {
+    padding-left: 22px;
+}
+
+.method-list li + li,
+.references li + li {
+    margin-top: 10px;
+}
+
+.references a {
+    color: var(--teal-dark);
+    font-weight: 800;
+    text-underline-offset: 3px;
+}
+
+.note {
+    border-left: 4px solid var(--teal);
+    background: #eef8f7;
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+}
+
 .loading-overlay {
     position: absolute;
     inset: 0;
@@ -472,7 +541,7 @@ button.icon-btn.active {
         flex-direction: column;
     }
 
-    .header-meta {
+    .top-nav {
         justify-content: flex-start;
     }
 
@@ -482,6 +551,10 @@ button.icon-btn.active {
 
     .original-card {
         grid-row: auto;
+    }
+
+    .content-page.two-column {
+        grid-template-columns: 1fr;
     }
 }
 

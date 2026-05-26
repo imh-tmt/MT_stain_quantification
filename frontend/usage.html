@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usage | MT Collagen Quantification</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <div class="app-shell">
+        <header class="app-header">
+            <div>
+                <p class="eyebrow">Masson's Trichrome Analysis</p>
+                <h1>Usage Guide</h1>
+                <p class="subtitle">Step-by-step instructions in Korean and English for image upload, ROI calibration, and result export.</p>
+            </div>
+            <nav class="top-nav" aria-label="Site navigation">
+                <a href="/">Analyze</a>
+                <a href="/methods">Methods</a>
+                <a href="/usage" class="active">Usage KR/EN</a>
+            </nav>
+        </header>
+
+        <main class="content-page two-column">
+            <section class="text-panel">
+                <span class="badge original">Korean</span>
+                <h2>사용 방법</h2>
+                <ol class="method-list">
+                    <li>메인 화면에서 Masson's trichrome 염색 이미지를 업로드합니다. PNG, TIFF, JPEG 등 일반 이미지 형식을 사용할 수 있습니다.</li>
+                    <li>업로드 후 자동으로 기본 stain vector를 사용한 collagen deconvolution 결과가 계산됩니다.</li>
+                    <li>슬라이드별 색상 차이가 크면 <strong>Select ROIs</strong>를 누른 뒤 collagen, counter stain, background 영역을 각각 드래그해 선택합니다.</li>
+                    <li>ROI 선택 후 <strong>Process</strong>를 눌러 보정된 stain vector로 다시 분석합니다.</li>
+                    <li><strong>Fibrotic Burden</strong> 값은 전체 조직 영역 중 collagen-positive pixel의 비율입니다.</li>
+                    <li>결과 값 또는 복사 버튼을 클릭하면 Excel이나 통계 프로그램에 붙여넣을 수 있습니다.</li>
+                    <li>Collagen-only 이미지는 다운로드 버튼을 눌러 PNG 파일로 저장할 수 있습니다.</li>
+                </ol>
+                <p class="note">
+                    분석 일관성을 위해 한 실험 세트에서는 동일한 threshold와 ROI 선택 기준을 사용하세요.
+                </p>
+            </section>
+
+            <section class="text-panel">
+                <span class="badge neutral">English</span>
+                <h2>How to Use</h2>
+                <ol class="method-list">
+                    <li>Upload a Masson's trichrome-stained image from the main analysis page. Common image formats such as PNG, TIFF, and JPEG are supported.</li>
+                    <li>The app automatically performs collagen deconvolution using the default stain vectors after upload.</li>
+                    <li>If staining color varies across slides, click <strong>Select ROIs</strong> and draw representative collagen, counterstain, and background regions.</li>
+                    <li>Click <strong>Process</strong> to re-run the analysis using ROI-calibrated stain vectors.</li>
+                    <li><strong>Fibrotic Burden</strong> represents the percentage of collagen-positive pixels within the valid tissue area.</li>
+                    <li>Click individual values or the copy button to paste the results into Excel or statistical software.</li>
+                    <li>Use the download button to save the collagen-only output image as a PNG file.</li>
+                </ol>
+                <p class="note">
+                    For consistent quantification, use the same threshold and ROI selection criteria within each experimental dataset.
+                </p>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
