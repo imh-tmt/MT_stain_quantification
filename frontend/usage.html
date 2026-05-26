@@ -30,7 +30,7 @@
                 <ol class="method-list">
                     <li>메인 화면에서 Masson's trichrome 염색 이미지를 업로드합니다. PNG, TIFF, JPEG 등 일반 이미지 형식을 사용할 수 있습니다.</li>
                     <li>업로드 후 자동으로 기본 stain vector를 사용한 collagen deconvolution 결과가 계산됩니다.</li>
-                    <li>슬라이드별 색상 차이가 크면 <strong>Select ROIs</strong>를 누른 뒤 collagen, counter stain, background 영역을 각각 드래그해 선택합니다.</li>
+                    <li>Collagen Only 이미지 또는 Segmented Mask가 실제 염색 상태나 육안 분석과 다르게 보이면 <strong>Select ROIs</strong>를 누른 뒤 collagen, counter stain, background 영역을 각각 드래그해 선택합니다.</li>
                     <li>ROI를 정확히 지정하려면 마우스 휠로 이미지를 확대하고, 마우스 드래그로 위치를 이동한 뒤 해당 stain이 뚜렷하게 염색된 부분만 선택합니다.</li>
                     <li>ROI 선택 후 <strong>Process</strong>를 눌러 보정된 stain vector로 다시 분석합니다.</li>
                     <li><strong>Fibrotic Burden</strong> 값은 전체 조직 영역 중 collagen-positive pixel의 비율입니다.</li>
@@ -48,7 +48,7 @@
                 <ol class="method-list">
                     <li>Upload a Masson's trichrome-stained image from the main analysis page. Common image formats such as PNG, TIFF, and JPEG are supported.</li>
                     <li>The app automatically performs collagen deconvolution using the default stain vectors after upload.</li>
-                    <li>If staining color varies across slides, click <strong>Select ROIs</strong> and draw representative collagen, counterstain, and background regions.</li>
+                    <li>If the Collagen Only image or Segmented Mask does not match the actual staining pattern or visual assessment, click <strong>Select ROIs</strong> and draw representative collagen, counterstain, and background regions.</li>
                     <li>For accurate ROI selection, zoom in with the mouse wheel, pan by dragging the image, and select only areas where the target stain is clearly represented.</li>
                     <li>Click <strong>Process</strong> to re-run the analysis using ROI-calibrated stain vectors.</li>
                     <li><strong>Fibrotic Burden</strong> represents the percentage of collagen-positive pixels within the valid tissue area.</li>
