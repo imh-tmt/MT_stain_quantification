@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: mt-stain-quantification
+    env: docker
+    plan: free
+    healthCheckPath: /health

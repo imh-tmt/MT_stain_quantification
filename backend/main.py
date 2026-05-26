@@ -1,13 +1,26 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from pathlib import Path
+from typing import Optional
+
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import numpy as np
 import io
 from PIL import Image
 from skimage.util import img_as_float
 
-app = FastAPI()
+ROOT_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = ROOT_DIR / "frontend"
+MAX_IMAGE_PIXELS = 60_000_000
+
+Image.MAX_IMAGE_PIXELS = MAX_IMAGE_PIXELS
+
+app = FastAPI(
+    title="Masson's Trichrome Stain Quantification",
+    description="Web API for collagen color deconvolution and fibrotic burden quantification.",
+    version="1.0.0",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,13 +30,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static files
-app.mount("/static", StaticFiles(directory="../frontend"), name="static")
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 @app.get("/")
 async def read_index():
-    from fastapi.responses import FileResponse
-    return FileResponse('../frontend/index.html')
+    return FileResponse(FRONTEND_DIR / "index.html")
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 
 def get_masson_trichrome_matrix(custom_stain1=None, custom_stain2=None):
     # Standardized Optical Density vectors for Masson's Trichrome
@@ -114,35 +129,60 @@ def image_to_base64(img: Image.Image) -> str:
 @app.post("/deconvolve/")
 async def deconvolve_image(
     file: UploadFile = File(...),
-    roi_collagen_x: int = Form(None), roi_collagen_y: int = Form(None), roi_collagen_w: int = Form(None), roi_collagen_h: int = Form(None),
-    roi_counter_x: int = Form(None), roi_counter_y: int = Form(None), roi_counter_w: int = Form(None), roi_counter_h: int = Form(None),
-    roi_bg_x: int = Form(None), roi_bg_y: int = Form(None), roi_bg_w: int = Form(None), roi_bg_h: int = Form(None)
+    roi_collagen_x: Optional[int] = Form(None), roi_collagen_y: Optional[int] = Form(None), roi_collagen_w: Optional[int] = Form(None), roi_collagen_h: Optional[int] = Form(None),
+    roi_counter_x: Optional[int] = Form(None), roi_counter_y: Optional[int] = Form(None), roi_counter_w: Optional[int] = Form(None), roi_counter_h: Optional[int] = Form(None),
+    roi_bg_x: Optional[int] = Form(None), roi_bg_y: Optional[int] = Form(None), roi_bg_w: Optional[int] = Form(None), roi_bg_h: Optional[int] = Form(None)
 ):
     contents = await file.read()
-    image = Image.open(io.BytesIO(contents)).convert("RGB")
+
+    try:
+        image = Image.open(io.BytesIO(contents)).convert("RGB")
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail="Unsupported or damaged image file.") from exc
+
+    if image.width * image.height > MAX_IMAGE_PIXELS:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Image is too large. Maximum supported size is {MAX_IMAGE_PIXELS:,} pixels.",
+        )
+
     image_np = np.array(image)
     
     # 1. Determine Background (I_0)
     I_0 = np.array([1.0, 1.0, 1.0])
-    if roi_bg_w is not None and roi_bg_w > 0:
-        bg_roi = image_np[roi_bg_y:roi_bg_y+roi_bg_h, roi_bg_x:roi_bg_x+roi_bg_w]
+    def crop_roi(roi_x, roi_y, roi_w, roi_h):
+        if None in (roi_x, roi_y, roi_w, roi_h) or roi_w <= 0 or roi_h <= 0:
+            return None
+
+        height, width = image_np.shape[:2]
+        x1 = max(0, min(width, roi_x))
+        y1 = max(0, min(height, roi_y))
+        x2 = max(0, min(width, roi_x + roi_w))
+        y2 = max(0, min(height, roi_y + roi_h))
+
+        if x2 <= x1 or y2 <= y1:
+            return None
+
+        return image_np[y1:y2, x1:x2]
+
+    bg_roi = crop_roi(roi_bg_x, roi_bg_y, roi_bg_w, roi_bg_h)
+    if bg_roi is not None:
         if bg_roi.size > 0:
             I_0 = np.mean(img_as_float(bg_roi), axis=(0, 1))
             I_0 = np.clip(I_0, 1e-6, 1.0)
             
     # Helper to calculate OD vector from ROI
     def get_od_vector(roi_x, roi_y, roi_w, roi_h):
-        if roi_w is not None and roi_w > 0:
-            roi = image_np[roi_y:roi_y+roi_h, roi_x:roi_x+roi_w]
-            if roi.size > 0:
-                roi_float = img_as_float(roi)
-                roi_float = roi_float / I_0
-                roi_float = np.clip(roi_float, 1e-6, 1.0)
-                roi_OD = -np.log(roi_float)
-                vec = np.mean(roi_OD.reshape((-1, 3)), axis=0)
-                norm = np.linalg.norm(vec)
-                if norm > 0:
-                    return vec / norm
+        roi = crop_roi(roi_x, roi_y, roi_w, roi_h)
+        if roi is not None and roi.size > 0:
+            roi_float = img_as_float(roi)
+            roi_float = roi_float / I_0
+            roi_float = np.clip(roi_float, 1e-6, 1.0)
+            roi_OD = -np.log(roi_float)
+            vec = np.mean(roi_OD.reshape((-1, 3)), axis=0)
+            norm = np.linalg.norm(vec)
+            if norm > 0:
+                return vec / norm
         return None
 
     stain1 = get_od_vector(roi_collagen_x, roi_collagen_y, roi_collagen_w, roi_collagen_h)
@@ -198,4 +238,3 @@ async def deconvolve_image(
         "non_collagen_tissue_pixels": non_collagen_tissue_pixels,
         "threshold_range": "0-180"
     }
-
